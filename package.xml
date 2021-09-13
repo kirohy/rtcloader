@@ -10,6 +10,6 @@
 
   <buildtool_depend>catkin</buildtool_depend>
 
-  <run_depend>openrtm_aist</run_depend>
-  <run_depend>openrtm_aist_python</run_depend>
+  <exec_depend>openrtm_aist</exec_depend>
+  <exec_depend>openrtm_aist_python</exec_depend>
 </package>

@@ -1,0 +1,23 @@
+<launch>
+  <node name="rtcd" pkg="openrtm_aist" type="rtcd" output="screen"
+        args='-o manager.is_master:YES -o "corba.master_manager:localhost:2810" -o "corba.nameservers:localhost:15005" -o "exec_cxt.periodic.rate:200" -o "exec_cxt.periodic.type:PeriodicExecutionContext"' />
+
+  <node name="modelloader" pkg="openhrp3" type="openhrp-model-loader"
+        args="-ORBInitRef NameService=corbaloc:iiop:localhost:15005/NameService" output="screen"/> <!-- mot necessary. specific for SeqencePlayer and StateHolder -->
+
+  <node name="serialload" pkg="rtcloader" type="serialload.py" output="screen"
+        args="localhost:2810">
+    <rosparam subst_value="true">
+      components:
+        - module: "hrpsys-base/SequencePlayer"
+          name: seq
+          config_file: $(find hrpsys_ros_bridge)/models/SampleRobot.conf
+        - module: "hrpsys-base/StateHolder"
+          name: sh
+          config_file: $(find hrpsys_ros_bridge)/models/SampleRobot.conf
+    </rosparam>
+  </node>
+
+  <node name="load"  pkg="rtcloader" type="load.py" output="screen"
+        args="hrpsys-base/SoftErrorLimiter localhost:2810 -name el -configfile $(find hrpsys_ros_bridge)/models/SampleRobot.conf"/>
+</launch>

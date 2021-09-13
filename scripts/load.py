@@ -1,5 +1,8 @@
 #!/usr/bin/env python
 
+import rospy
+rospy.init_node("load",anonymous=True)
+
 import argparse
 parser = argparse.ArgumentParser()
 parser.add_argument("module", help="ex <packagename>/<modulename>")
@@ -8,7 +11,8 @@ parser.add_argument("-managername", default="", help="ex manager_name")
 parser.add_argument("-configfile", default="", help="ex config_file")
 parser.add_argument("-name", default="", help="instance_name")
 
-args = parser.parse_args()
+import sys
+args = parser.parse_args(rospy.myargv(argv=sys.argv)[1:])
 
 modulepkg = args.module.split("/")[0]
 modulename = args.module.split("/")[1]
@@ -27,12 +31,17 @@ obj = orb.string_to_object("corbaloc:iiop:"+args.manager+"/manager")
 mgr = obj._narrow(RTM.Manager)
 
 if args.configfile:
-    mgr.set_configuration("example."+instance_name+".config_file", args.configfile)
+    #mgr.set_configuration("example."+instance_name+".config_file", args.configfile)
+    mgr.set_configuration("example."+modulename+".config_file", args.configfile)
 
 import pkgconfig
-mgr.load_module(str(pkgconfig.variables(modulepkg)["prefix"])+"/lib/lib"+modulename+".so",modulename+"Init")
+mgr.load_module(str(pkgconfig.variables(modulepkg)["prefix"])+"/lib/"+modulename+".so",modulename+"Init")
 
 create_args = modulename+'?instance_name=' + instance_name
 if args.managername:
     create_args+="&manager_name="+args.managername
 rtc = mgr.create_component(create_args)
+if rtc:
+    rospy.loginfo(instance_name+" created")
+else:
+    rospy.loginfo(instance_name+" create failed")
