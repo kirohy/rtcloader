@@ -17,8 +17,10 @@ orb = CORBA.ORB_init(sys.argv, CORBA.ORB_ID)
 obj = orb.string_to_object("corbaloc:iiop:"+args.manager+"/manager")
 mgr = obj._narrow(RTM.Manager)
 
+# load components
 import pkgconfig
 components = rospy.get_param("~components")
+rtcs = []
 for component in components:
     modulepkg = component["module"].split("/")[0]
     modulename = component["module"].split("/")[1]
@@ -39,5 +41,13 @@ for component in components:
     rtc = mgr.create_component(create_args)
     if rtc:
         rospy.loginfo(instance_name+" created")
+        rtcs.append(rtc)
     else:
         rospy.loginfo(instance_name+" create failed")
+
+# serialize components
+ec = rtcs[0].get_owned_contexts()[0]
+for rtc in rtcs[1:]:
+    if not ec._is_equivalent(rtc.get_owned_contexts()[0]):
+        rtc.get_owned_contexts()[0].stop()
+        ec.add_component(rtc)
