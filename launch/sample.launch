@@ -9,6 +9,9 @@
         args="localhost:2810">
     <rosparam subst_value="true">
       components:
+        - module: "hrpsys_trans_bridge/RobotHardware"
+          name: rh
+          config_file: $(find hrpsys_ros_bridge)/models/SampleRobot.conf
         - module: "hrpsys-base/SequencePlayer"
           name: seq
           config_file: $(find hrpsys_ros_bridge)/models/SampleRobot.conf

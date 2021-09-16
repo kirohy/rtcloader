@@ -19,6 +19,8 @@ mgr = obj._narrow(RTM.Manager)
 
 # load components
 import pkgconfig
+import os
+import rospkg
 components = rospy.get_param("~components")
 rtcs = []
 for component in components:
@@ -33,7 +35,13 @@ for component in components:
         #mgr.set_configuration("example."+instance_name+".config_file", component["config_file"])
         mgr.set_configuration("example."+modulename+".config_file", component["config_file"])
 
-    mgr.load_module(str(pkgconfig.variables(modulepkg)["prefix"])+"/lib/"+modulename+".so",modulename+"Init")
+    if os.path.exists(str(pkgconfig.variables(modulepkg)["prefix"])+"/lib/"+modulename+".so"):
+        modulepath = str(pkgconfig.variables(modulepkg)["prefix"])+"/lib/"+modulename+".so"
+    elif os.path.exists(rospkg.RosPack().get_path(modulepkg)+"/lib/"+modulename+".so"):
+        modulepath = rospkg.RosPack().get_path(modulepkg)+"/lib/"+modulename+".so"
+    else:
+        modulepath = modulename+".so"
+    mgr.load_module(modulepath,modulename+"Init")
 
     create_args = modulename+'?instance_name=' + instance_name
     if args.managername:

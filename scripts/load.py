@@ -35,7 +35,15 @@ if args.configfile:
     mgr.set_configuration("example."+modulename+".config_file", args.configfile)
 
 import pkgconfig
-mgr.load_module(str(pkgconfig.variables(modulepkg)["prefix"])+"/lib/"+modulename+".so",modulename+"Init")
+import os
+import rospkg
+if os.path.exists(str(pkgconfig.variables(modulepkg)["prefix"])+"/lib/"+modulename+".so"):
+    modulepath = str(pkgconfig.variables(modulepkg)["prefix"])+"/lib/"+modulename+".so"
+elif os.path.exists(rospkg.RosPack().get_path(modulepkg)+"/lib/"+modulename+".so"):
+    modulepath = rospkg.RosPack().get_path(modulepkg)+"/lib/"+modulename+".so"
+else:
+    modulepath = modulename+".so"
+mgr.load_module(modulepath,modulename+"Init")
 
 create_args = modulename+'?instance_name=' + instance_name
 if args.managername:
