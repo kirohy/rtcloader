@@ -47,4 +47,8 @@ ec = rtcs[0].get_owned_contexts()[0]
 for rtc in rtcs[1:]:
     if not ec._is_equivalent(rtc.get_owned_contexts()[0]):
         rtc.get_owned_contexts()[0].stop()
+        rtc.get_owned_contexts()[0].remove_component(rtc)
         ec.add_component(rtc)
+
+for rtc in rtcs:
+    ec.activate_component(rtc) # <rtactivate> tag cannot activate because it uses get_owned_context() (not get_participating_context) and ec_id=0 (not 1)
