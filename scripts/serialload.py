@@ -1,5 +1,17 @@
 #!/usr/bin/env python
 
+# args:
+#   seroalload.py localhost:2810 -managername manager
+
+# rosparams
+#   execution_context:
+#     type: "PeriodicExecutionContext"
+#     rate: 500
+#   components:
+#      - module: "hrpsys-base/RobotHardware"
+#        name: rh
+#        config_file: $(find hrpsys_ros_bridge)/models/SampleRobot.conf
+
 import rospy
 rospy.init_node("serialload",anonymous=True)
 
@@ -17,10 +29,30 @@ orb = CORBA.ORB_init(sys.argv, CORBA.ORB_ID)
 obj = orb.string_to_object("corbaloc:iiop:"+args.manager+"/manager")
 mgr = obj._narrow(RTM.Manager)
 
-# load components
+# load execution context
 import pkgconfig
 import os
 import rospkg
+ec_args = ""
+execution_context = rospy.get_param("~execution_context")
+if "type" in execution_context:
+    if "/" in execution_context["type"]:
+        ecpkg = execution_context["type"].split("/")[0]
+        ecname = execution_context["type"].split("/")[1]
+        if os.path.exists(str(pkgconfig.variables(ecpkg)["prefix"])+"/lib/"+ecname+".so"):
+            ecpath = str(pkgconfig.variables(ecpkg)["prefix"])+"/lib/"+ecname+".so"
+        elif os.path.exists(rospkg.RosPack().get_path(ecpkg)+"/lib/"+ecname+".so"):
+            ecpath = rospkg.RosPack().get_path(ecpkg)+"/lib/"+ecname+".so"
+        else:
+            ecpath = modulename+".so"
+        mgr.load_module(ecpath,ecname+"Init")
+    else:
+        ecname = execution_context["type"]
+    ec_args += "&exec_cxt.periodic.type="+ecname
+if "rate" in execution_context:
+    ec_args += "&exec_cxt.periodic.rate="+str(execution_context["rate"])
+
+# load components
 components = rospy.get_param("~components")
 rtcs = []
 for component in components:
@@ -46,6 +78,9 @@ for component in components:
     create_args = modulename+'?instance_name=' + instance_name
     if args.managername:
         create_args+="&manager_name="+args.managername
+
+    create_args+= ec_args
+
     rtc = mgr.create_component(create_args)
     if rtc:
         rospy.loginfo(instance_name+" created")
