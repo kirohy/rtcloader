@@ -25,8 +25,11 @@ mgr = obj._narrow(RTM.Manager)
 
 rtcs = []
 
-# find components
 import time
+
+time.sleep(3) # wait for rtmlaunch.py.
+
+# find components
 instance_names = rospy.get_param("~instance_names")
 for instance_name in instance_names:
     rtc = None
