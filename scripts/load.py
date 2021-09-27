@@ -80,4 +80,4 @@ rtc = mgr.create_component(create_args)
 if rtc:
     rospy.loginfo(instance_name+" created")
 else:
-    rospy.logerror(instance_name+" create failed")
+    rospy.logerr(instance_name+" create failed")
