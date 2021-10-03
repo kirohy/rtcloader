@@ -9,7 +9,8 @@
 #     rate: 500
 #   instance_name: rh
 #   config_file: $(find hrpsys_ros_bridge)/models/SampleRobot.conf
-
+#   profiles:
+#     <name>: <value>
 
 import rospy
 rospy.init_node("load",anonymous=True)
@@ -62,9 +63,14 @@ if rospy.has_param("~instance_name"):
 else:
     instance_name = modulename
 
+# profiles
 if rospy.has_param("~config_file"):
     #mgr.set_configuration("example."+instance_name+".config_file", args.configfile)
     mgr.set_configuration("example."+modulename+".config_file", rospy.get_param("~config_file"))
+if rospy.has_param("~profiles"):
+    profiles = rospy.get_param("~profiles")
+    for key, value in profiles.items():
+        create_args += "&" + key + "=" + value
 
 if os.path.exists(str(pkgconfig.variables(modulepkg)["prefix"])+"/lib/"+modulename+".so"):
     modulepath = str(pkgconfig.variables(modulepkg)["prefix"])+"/lib/"+modulename+".so"
