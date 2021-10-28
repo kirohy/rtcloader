@@ -41,13 +41,18 @@ if rospy.has_param("~execution_context"):
     if "type" in execution_context:
         if "/" in execution_context["type"]:
             ecpkg = execution_context["type"].split("/")[0]
-            ecname = execution_context["type"].split("/")[1]
-            if os.path.exists(str(pkgconfig.variables(ecpkg)["prefix"])+"/lib/"+ecname+".so"):
-                ecpath = str(pkgconfig.variables(ecpkg)["prefix"])+"/lib/"+ecname+".so"
-            elif os.path.exists(rospkg.RosPack().get_path(ecpkg)+"/lib/"+ecname+".so"):
-                ecpath = rospkg.RosPack().get_path(ecpkg)+"/lib/"+ecname+".so"
+            if len(execution_context["type"].split("/")) > 2:
+                ecfile = execution_context["type"].split("/")[1]
+                ecname = execution_context["type"].split("/")[2]
             else:
-                ecpath = modulename+".so"
+                ecfile = execution_context["type"].split("/")[1]
+                ecname = execution_context["type"].split("/")[1]
+            if os.path.exists(str(pkgconfig.variables(ecpkg)["prefix"])+"/lib/"+ecfile+".so"):
+                ecpath = str(pkgconfig.variables(ecpkg)["prefix"])+"/lib/"+ecfile+".so"
+            elif os.path.exists(rospkg.RosPack().get_path(ecpkg)+"/lib/"+ecfile+".so"):
+                ecpath = rospkg.RosPack().get_path(ecpkg)+"/lib/"+ecfile+".so"
+            else:
+                ecpath = ecfile+".so"
             mgr.load_module(ecpath,ecname+"Init")
         else:
             ecname = execution_context["type"]
