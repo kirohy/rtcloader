@@ -53,7 +53,7 @@ if rospy.has_param("~execution_context"):
                 ecpath = rospkg.RosPack().get_path(ecpkg)+"/lib/"+ecfile+".so"
             else:
                 ecpath = ecfile+".so"
-            mgr.load_module(ecpath,ecname+"Init")
+            mgr.load_module(ecpath,ecfile+"Init")
         else:
             ecname = execution_context["type"]
         create_args += "&exec_cxt.periodic.type="+ecname
@@ -75,7 +75,7 @@ if rospy.has_param("~config_file"):
 if rospy.has_param("~profiles"):
     profiles = rospy.get_param("~profiles")
     for key, value in profiles.items():
-        create_args += "&" + key + "=" + value
+        create_args += "&" + key + "=" + str(value)
 
 if os.path.exists(str(pkgconfig.variables(modulepkg)["prefix"])+"/lib/"+modulename+".so"):
     modulepath = str(pkgconfig.variables(modulepkg)["prefix"])+"/lib/"+modulename+".so"
