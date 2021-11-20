@@ -47,11 +47,15 @@ if rospy.has_param("~execution_context"):
             else:
                 ecfile = execution_context["type"].split("/")[1]
                 ecname = execution_context["type"].split("/")[1]
-            if os.path.exists(str(pkgconfig.parse(ecpkg)["library_dirs"][0])+"/"+ecfile+".so"):
-                ecpath = str(pkgconfig.parse(ecpkg)["library_dirs"][0])+"/"+ecfile+".so"
-            elif os.path.exists(rospkg.RosPack().get_path(ecpkg)+"/lib/"+ecfile+".so"):
-                ecpath = rospkg.RosPack().get_path(ecpkg)+"/lib/"+ecfile+".so"
-            else:
+            ecpath = ""
+            for directory in pkgconfig.parse(ecpkg)["library_dirs"]:
+                if os.path.exists(str(directory)+"/"+ecfile+".so"):
+                    ecpath = str(directory)+"/"+ecfile+".so"
+                    break
+            if ecpath == "":
+                if os.path.exists(rospkg.RosPack().get_path(ecpkg)+"/lib/"+ecfile+".so"):
+                    ecpath = rospkg.RosPack().get_path(ecpkg)+"/lib/"+ecfile+".so"
+            if ecpath == "":
                 ecpath = ecfile+".so"
             mgr.load_module(ecpath,ecfile+"Init")
         else:
@@ -77,11 +81,15 @@ if rospy.has_param("~profiles"):
     for key, value in profiles.items():
         create_args += "&" + key + "=" + str(value)
 
-if os.path.exists(str(pkgconfig.parse(modulepkg)["library_dirs"][0])+"/"+modulename+".so"):
-    modulepath = str(pkgconfig.parse(modulepkg)["library_dirs"][0])+"/"+modulename+".so"
-elif os.path.exists(rospkg.RosPack().get_path(modulepkg)+"/lib/"+modulename+".so"):
-    modulepath = rospkg.RosPack().get_path(modulepkg)+"/lib/"+modulename+".so"
-else:
+modulepath = ""
+for directory in pkgconfig.parse(modulepkg)["library_dirs"]:
+    if os.path.exists(str(directory)+"/"+modulename+".so"):
+        modulepath = str(directory)+"/"+modulename+".so"
+        break
+if modulepath == "":
+    if os.path.exists(rospkg.RosPack().get_path(modulepkg)+"/lib/"+modulename+".so"):
+        modulepath = rospkg.RosPack().get_path(modulepkg)+"/lib/"+modulename+".so"
+if modulepath == "":
     modulepath = modulename+".so"
 mgr.load_module(modulepath,modulename+"Init")
 
