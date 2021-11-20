@@ -47,8 +47,8 @@ if rospy.has_param("~execution_context"):
             else:
                 ecfile = execution_context["type"].split("/")[1]
                 ecname = execution_context["type"].split("/")[1]
-            if os.path.exists(str(pkgconfig.variables(ecpkg)["prefix"])+"/lib/"+ecfile+".so"):
-                ecpath = str(pkgconfig.variables(ecpkg)["prefix"])+"/lib/"+ecfile+".so"
+            if os.path.exists(str(pkgconfig.parse(ecpkg)["library_dirs"])+"/"+ecfile+".so"):
+                ecpath = str(pkgconfig.parse(ecpkg)["library_dirs"])+"/"+ecfile+".so"
             elif os.path.exists(rospkg.RosPack().get_path(ecpkg)+"/lib/"+ecfile+".so"):
                 ecpath = rospkg.RosPack().get_path(ecpkg)+"/lib/"+ecfile+".so"
             else:
@@ -77,8 +77,8 @@ if rospy.has_param("~profiles"):
     for key, value in profiles.items():
         create_args += "&" + key + "=" + str(value)
 
-if os.path.exists(str(pkgconfig.variables(modulepkg)["prefix"])+"/lib/"+modulename+".so"):
-    modulepath = str(pkgconfig.variables(modulepkg)["prefix"])+"/lib/"+modulename+".so"
+if os.path.exists(str(pkgconfig.parse(modulepkg)["library_dirs"])+"/"+modulename+".so"):
+    modulepath = str(pkgconfig.parse(modulepkg)["library_dirs"])+"/"+modulename+".so"
 elif os.path.exists(rospkg.RosPack().get_path(modulepkg)+"/lib/"+modulename+".so"):
     modulepath = rospkg.RosPack().get_path(modulepkg)+"/lib/"+modulename+".so"
 else:
