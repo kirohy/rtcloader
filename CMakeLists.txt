@@ -5,7 +5,9 @@ find_package(catkin REQUIRED catkin_virtualenv)
 
 catkin_package()
 
-catkin_generate_virtualenv()
+catkin_generate_virtualenv(
+  PYTHON_INTERPRETER python2
+)
 
 catkin_install_python(
   PROGRAMS scripts/load.py scripts/serialize.py
