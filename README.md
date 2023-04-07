@@ -24,3 +24,20 @@ manager(rtcd)に対し、rtcをロードする.
 
 ### parameters
 * `execution_context/type`: rtcと一緒にロードするexecution_contextの型()
+
+## serialize.py
+rtcのserial executionを可能にする. instance_namesに与えられたrtcを順番に、instance_names[0]のRTCのExecutionContextにattachし、その後activateする. https://github.com/start-jsk/rtmros_common/pull/1112 の問題によってrtmlaunch.pyの<rtactivate> tagではrtcをactivateできないので、ここでactivateしている.
+
+```xml
+<node name="serialize" pkg="rtcloader" type="serialize.py" output="screen" args="localhost:2810">
+  <rosparam>
+    instance_names: ["RobotHardware0","seq","sh","kf","rmfo","ast","co","el","log"]
+  </rosparam>
+</node>
+```
+
+### 引数
+* 第1引数: master managerのポート (`ホスト名:ポート名`). (この引数、なくてもいいように作り直せる気がする)
+
+### parameters
+* `instance_names`: rtcの名前のリスト.
