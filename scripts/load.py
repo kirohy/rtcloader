@@ -48,7 +48,7 @@ if rospy.has_param("~execution_context"):
                 ecfile = execution_context["type"].split("/")[1]
                 ecname = execution_context["type"].split("/")[1]
             ecpath = ""
-            for directory, i in zip(pkgconfig.parse(ecpkg)["library_dirs"], range(1)): # search only top dir
+            for directory, i in zip(pkgconfig.parse(ecpkg)["library_dirs"], list(range(1))): # search only top dir
                 if os.path.exists(str(directory)+"/"+ecfile+".so"):
                     ecpath = str(directory)+"/"+ecfile+".so"
             if ecpath == "":
@@ -81,7 +81,7 @@ if rospy.has_param("~profiles"):
         create_args += "&" + key + "=" + str(value)
 
 modulepath = ""
-for directory, i in zip(pkgconfig.parse(modulepkg)["library_dirs"], range(1)): # search only top dir
+for directory, i in zip(pkgconfig.parse(modulepkg)["library_dirs"], list(range(1))): # search only top dir
     if os.path.exists(str(directory)+"/"+modulename+".so"):
         modulepath = str(directory)+"/"+modulename+".so"
 if modulepath == "":
