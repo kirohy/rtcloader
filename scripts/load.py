@@ -77,7 +77,7 @@ if rospy.has_param("~config_file"):
     mgr.set_configuration("example."+modulename+".config_file", rospy.get_param("~config_file"))
 if rospy.has_param("~profiles"):
     profiles = rospy.get_param("~profiles")
-    for key, value in profiles.items():
+    for key, value in list(profiles.items()):
         create_args += "&" + key + "=" + str(value)
 
 modulepath = ""
