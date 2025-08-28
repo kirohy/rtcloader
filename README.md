@@ -1,5 +1,10 @@
 # rtcloader
 
+## install
+```
+pip3 install pkgconfig
+```
+
 ## load.py
 manager(rtcd)に対し、rtcをロードする.
 
